@@ -1,0 +1,69 @@
+### Rcalc_hg19_SmaI_sites.R ##
+# ver 1.0
+# JJ 03/22/2014
+#
+# Calculates 
+#	total numbers of reads, 
+# 	uncorrected methylation 
+#	c9 corrected methylation values
+# Input file 1: libraryName_SmaI_sites.txt
+# 	created as an output of "count_SmaI_CH3.py" script
+# Input file 2: libraryName_spikes.txt
+# 	created by an old script Rcalc_hum.R from libraryName_meth.txt
+#	mapped by Shoudan's scripts
+#	takes c9 correction from the _spikes.txt file
+# Output file: table with 
+#	hg19_SmaI_ID, 
+#	chromosome,
+#	position, 
+#	methylated reads, m
+#	unmethylated reads, u
+#	total reads, t
+#	uncorrected methylation values, mp=100*(m+0.5)/(t+1)
+#	c9-corrected meth values, mc9=100*c9*(m+0.5)/(c9*(m+0.5)+u+0.5)
+#
+
+args  <- commandArgs(TRUE)
+
+# read table __SmaI_sites.txt
+met   <- read.table(args[1], sep="\t", header=F)
+
+# create objects with methylated and unmethylated reads
+m <- as.matrix(met[,4])
+u <- as.matrix(met[,5])
+
+# calculate total number of reads as t
+t <- m+u
+
+# calculated uncorrected methylation value
+# avoid division by zero; if m=0 and u=0, mp=50
+mp <- round(100*(m+0.5)/(t+1), digits=2)
+
+# read c9 correction calculated _spikes.txt file
+spikes <- read.table(args[2], sep="\t", header=T)
+## spikes <- read.table("CML80_meth.txt_spikes.txt", sep="\t", header=T)
+c9 <- spikes[18,4]
+
+# calculate corrected methylation by multiplication of 
+# methylated reads with c9
+# we assume that unmethylated reads do not need a correction
+mc9 <- round((100*c9*(m+0.5))/(c9*(m+0.5)+u+0.5), digits=2)
+
+# cbind columns m, u, t, mp, mc9 and create column names
+metc <- cbind(m, u, t, mp, mc9)
+colnames (metc) <- c("m", "u", "t", "mp", "mc9")
+
+# read table with SmaI IDs, chromosome, position 
+#	and c9 correction in the last line
+hg19_ID <- read.table("ID_hg19_SmaI_sites.txt",sep="\t", header=T)
+
+# 	make a matrix with c9 correction values
+correction_c9 <- round(c9, digits=3)
+correctmatrix   <- matrix(correction_c9, nrow=1, ncol=5)
+
+# bind all tables together and write an output table
+metcorr <- rbind (metc,correctmatrix)
+metcalc <- cbind(hg19_ID, metcorr)
+outputfile <- paste(args[1], "_mc9.txt", sep="")
+write.table(metcalc, outputfile, sep="\t", row.names=F, quote=F)
+
