@@ -6,12 +6,12 @@
 #	total numbers of reads, 
 # 	uncorrected methylation 
 #	c9 corrected methylation values
-# Input file 1: libraryName_SmaI_sites.txt
+# Input file 1: sample_SmaI_sites.txt
 # 	created as an output of "count_SmaI_CH3.py" script
-# Input file 2: libraryName_spikes.txt
-# 	created by an old script Rcalc_hum.R from libraryName_meth.txt
+# Input file 2: sample_spikes.txt
+# 	created by an old script Rcalc_hum.R from sample_meth.txt
 #	mapped by Shoudan's scripts
-#	takes c9 correction from the _spikes.txt file
+#	takes c9 correction from the sample_spikes.txt file
 # Output file: table with 
 #	hg19_SmaI_ID, 
 #	chromosome,
