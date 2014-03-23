@@ -12,6 +12,7 @@
 # 	created by an old script Rcalc_hum.R from sample_meth.txt
 #	mapped by Shoudan's scripts
 #	takes c9 correction from the sample_spikes.txt file
+# Requires "ID_hg19_SmaI_sites.txt", a table with SmaI IDs, chromosome, position
 # Output file: table with 
 #	hg19_SmaI_ID, 
 #	chromosome,
